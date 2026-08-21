@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -84,7 +84,8 @@
   var WEB_CLIENT_ID = '966661342666-0jkulmn0ua8dmkcov9ccati9g639s65p.apps.googleusercontent.com';
 
   // このページはアプリの一部として全対応言語のユーザーに表示される。
-  // 言語はアプリが locale= で渡す（アプリ側の対応6言語にマップ済み）。
+  // 言語はアプリが locale= で渡す（アプリの対応7言語すべてを持つ）。
+  // アプリに言語を足したらここにも足すこと。無い言語は英語に落ちる。
   var STRINGS = {
     ja: { title:'スプレッドシートを選択',
           sub:'Google でログインすると、<br>シートの一覧が表示されます。',
@@ -139,7 +140,16 @@
           loadText:'Prüfe deine Verbindung und versuche es erneut.',
           appTitle:'Diese Seite gehört zur App',
           appText:'Öffne sie über die Schaltfläche „+“ in Sheet Widget.',
-          retry:'Erneut versuchen', back:'Zurück zur App' }
+          retry:'Erneut versuchen', back:'Zurück zur App' },
+    fr: { title:'Choisir une feuille de calcul',
+          sub:'Connectez-vous avec Google pour voir<br>vos feuilles de calcul.',
+          btn:'Se connecter avec Google',
+          cancelled:'Connexion annulée.<br>Veuillez réessayer.',
+          loadTitle:'Échec du chargement',
+          loadText:'Vérifiez votre connexion et réessayez.',
+          appTitle:'Cette page fait partie de l’app',
+          appText:'Ouvrez-la avec le bouton « + » de Sheet Widget.',
+          retry:'Réessayer', back:'Retour à l’app' }
   };
 
   var readyScreen = document.getElementById('ready');
@@ -319,7 +329,8 @@
     }, 500);
   }
 
-  // Picker の対応表記に合わせる（アプリが渡すのはこの6つのいずれか）
+  // Picker の対応表記に合わせる。STRINGS に無い言語は Picker 本体も英語にする
+  // （文言だけ英語で Picker が別言語、という食い違いを避けるため）
   function pickerLocale(){
     return STRINGS[params.locale] ? params.locale : 'en';
   }
