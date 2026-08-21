@@ -49,6 +49,10 @@ LANGS = {
 }
 # 言語版を持たない訪問者に見せる版。ルート（英語）。
 X_DEFAULT = f"{SITE}/"
+
+# 英語がルートへ移る前に配っていたURL。App Store Connect のマーケティングURLや
+# 過去に共有したリンクが指しているので、404にせずルートへ送る。
+ALIASES = {"en": f"{SITE}/"}
 # hreflang の値は html lang とは別（zht → zh-Hant）
 HREFLANG = {k: v[1] for k, v in LANGS.items()}
 
@@ -235,6 +239,26 @@ REDIRECT = """<script>
 </script>"""
 
 
+def alias_page(target):
+    """旧URL用の転送ページ。検索に出す必要はないので noindex にし、
+    canonical で転送先を指す。JSが無くても meta refresh とリンクで到達できる。"""
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="{target}">
+<meta http-equiv="refresh" content="0;url={target}">
+<title>Sheet Widget</title>
+</head>
+<body>
+<p><a href="{target}">Sheet Widget</a></p>
+<script>location.replace("{target}" + location.search + location.hash);</script>
+</body>
+</html>
+"""
+
+
 def build_sitemap():
     """トップ・各言語ページ・規約類を列挙する。言語ページには hreflang も添える。"""
     alt = "\n".join(
@@ -294,6 +318,11 @@ def main():
             "</head>", f"<!-- BUILD:HEAD -->\n{head}<!-- /BUILD:HEAD -->\n</head>", 1)
         open(path, "w", encoding="utf-8").write(html)
         print(f"  {(subdir or '.') + '/index.html':22} 文言 {n} 箇所を静的化  {len(html):,} 文字")
+
+    for path, target in ALIASES.items():
+        os.makedirs(os.path.join(ROOT, path), exist_ok=True)
+        open(os.path.join(ROOT, path, "index.html"), "w", encoding="utf-8").write(alias_page(target))
+        print(f"  {path + '/index.html':22} → {target} へ転送")
 
     open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write(build_sitemap())
     print(f"  {'sitemap.xml':22} {len(LANGS)} 言語 + 規約 {len(LANGS)*2} ページ")
