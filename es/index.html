@@ -37,7 +37,10 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- フォントの読み込みで描画を止めない（読み終わってから適用する） -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
 <style>
 :root{
   --paper:#fbfaf6;
@@ -1477,12 +1480,9 @@ const I18N = {
 
 let LANG = (function(){
   const ok = ['ja','en','ko','zht','es','de','fr'];
-  // /en/ などの言語ディレクトリは、生成時に window.__SW_LANG を埋めてある。
-  // ブラウザ設定より優先する（そのURLを開いた意図が明確なため）。
+  // 言語はURLが決める。各ページに生成時 window.__SW_LANG を埋めてある。
+  // 以前あった ?lang= 指定は廃止した（URLと表示言語が食い違う原因になるため）。
   if(ok.includes(window.__SW_LANG)) return window.__SW_LANG;
-  let q = new URLSearchParams(location.search).get('lang');
-  if(q === 'zh' || q === 'zh-hant' || q === 'zh-Hant') q = 'zht';
-  if(ok.includes(q)) return q;
   // URLが言語を決める。ページ自身が window.__SW_LANG を持っているので
   // ここに落ちてくることは通常ない（生成前のファイルを直接開いた場合のみ）。
   return 'en';

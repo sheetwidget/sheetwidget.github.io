@@ -293,7 +293,12 @@ def main():
     src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
     if args.publish:
         src = publish(src)
-        print("  公開モード: noindex 解除 / App Store URL を設定")
+        # 規約・プライバシー14ページは Jekyll のレイアウト側に noindex がある。
+        # ここで一緒に外さないと、公開後もその14ページだけ検索に出ない。
+        lay = os.path.join(ROOT, "_layouts", "legal.html")
+        t = open(lay, encoding="utf-8").read()
+        open(lay, "w", encoding="utf-8").write(publish(t))
+        print("  公開モード: noindex 解除 / App Store URL を設定（規約レイアウト含む）")
     i18n = load_i18n(src)
 
     for lang in LANGS:

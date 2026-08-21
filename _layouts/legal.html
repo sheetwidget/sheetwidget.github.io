@@ -8,6 +8,16 @@
 <!-- ▼リリース時にこの1行を削除（検索エンジンからの非公開設定） -->
 <meta name="robots" content="noindex">
 {% if page.permalink contains 'privacy' %}{% assign legalBase = 'privacy' %}{% else %}{% assign legalBase = 'terms' %}{% endif %}
+{% comment %}英語はルート、それ以外は言語ディレクトリ。本体のURL構成と揃える{% endcomment %}
+{% case page.lang %}
+  {% when 'ja' %}{% assign home = '/ja/' %}{% assign homeLabel = '← ホーム' %}{% assign ogLocale = 'ja_JP' %}
+  {% when 'ko' %}{% assign home = '/ko/' %}{% assign homeLabel = '← 홈' %}{% assign ogLocale = 'ko_KR' %}
+  {% when 'zh-Hant' %}{% assign home = '/zht/' %}{% assign homeLabel = '← 首頁' %}{% assign ogLocale = 'zh_TW' %}
+  {% when 'es' %}{% assign home = '/es/' %}{% assign homeLabel = '← Inicio' %}{% assign ogLocale = 'es_ES' %}
+  {% when 'de' %}{% assign home = '/de/' %}{% assign homeLabel = '← Startseite' %}{% assign ogLocale = 'de_DE' %}
+  {% when 'fr' %}{% assign home = '/fr/' %}{% assign homeLabel = '← Accueil' %}{% assign ogLocale = 'fr_FR' %}
+  {% else %}{% assign home = '/' %}{% assign homeLabel = '← Home' %}{% assign ogLocale = 'en_US' %}
+{% endcase %}
 <link rel="canonical" href="https://sheetwidget.com{{ page.permalink }}">
 <link rel="alternate" hreflang="x-default" href="https://sheetwidget.com/{{ legalBase }}-en/">
 <link rel="alternate" hreflang="ja" href="https://sheetwidget.com/{{ legalBase }}/">
@@ -22,12 +32,21 @@
 <meta property="og:title" content="{{ page.title }} — Sheet Widget">
 <meta property="og:image" content="https://sheetwidget.com/img/og.png">
 <meta property="og:url" content="https://sheetwidget.com{{ page.permalink }}">
+<meta property="og:description" content="Sheet Widget — {{ page.title }}">
+<meta property="og:locale" content="{{ ogLocale }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page.title }} — Sheet Widget">
+<meta name="twitter:description" content="Sheet Widget — {{ page.title }}">
+<meta name="twitter:image" content="https://sheetwidget.com/img/og.png">
 <meta name="theme-color" content="#fbfaf6">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- フォントの読み込みで描画を止めない（読み終わってから適用する） -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
 <style>
 :root{
   --paper:#fbfaf6; --ink:#1b1d1f; --ink-2:#5f6368;
@@ -121,8 +140,8 @@ footer{border-top:1px solid var(--grid-strong);background:#fff;margin-top:40px}
 </head>
 <body>
 <div class="fxbar">
-  <a class="brandMini" href="/{% unless page.lang == 'ja' %}?lang=en{% endunless %}"><img src="/img/icon.png" alt="">Sheet Widget</a>
-  <a class="back" href="/{% unless page.lang == 'ja' %}?lang=en{% endunless %}">{% if page.lang == 'ja' %}← ホーム{% else %}← Home{% endif %}</a>
+  <a class="brandMini" href="{{ home }}"><img src="/img/icon.png" alt="" width="22" height="22">Sheet Widget</a>
+  <a class="back" href="{{ home }}">{{ homeLabel }}</a>
 </div>
 
 <main class="legal">
@@ -131,7 +150,7 @@ footer{border-top:1px solid var(--grid-strong);background:#fff;margin-top:40px}
 
 <footer>
   <div class="footInner">
-    <div class="fl"><img src="/img/icon.png" alt="Sheet Widget"><b>Sheet Widget</b></div>
+    <div class="fl"><img src="/img/icon.png" alt="Sheet Widget" width="34" height="34" loading="lazy"><b>Sheet Widget</b></div>
     <nav>
       {% case page.lang %}
       {% when 'ja' %}
