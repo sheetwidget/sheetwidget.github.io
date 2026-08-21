@@ -1574,8 +1574,8 @@ function applyLang(lang){
   }
   document.querySelectorAll('[data-legal]').forEach(a => {
     const base = a.dataset.legal;
-    const sfx = {ja:'', en:'-en', ko:'-ko', zht:'-zht', es:'-es', de:'-de', fr:'-fr'}[lang] ?? '-en';
-    a.href = '/' + base + sfx + '/';
+    // 英語はルート直下、他は言語ディレクトリ配下（規約ページのURL構成と揃える）
+    a.href = lang === 'en' ? '/' + base + '/' : '/' + lang + '/' + base + '/';
   });
   const sel = document.getElementById('langSel');
   if(sel) sel.value = lang;

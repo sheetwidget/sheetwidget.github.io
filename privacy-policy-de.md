@@ -2,7 +2,7 @@
 layout: legal
 lang: de
 title: Datenschutzrichtlinie
-permalink: /privacy-de/
+permalink: /de/privacy/
 ---
 
 # Datenschutzrichtlinie

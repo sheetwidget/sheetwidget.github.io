@@ -2,7 +2,7 @@
 layout: legal
 lang: ja
 title: 利用規約
-permalink: /terms/
+permalink: /ja/terms/
 ---
 
 # 利用規約

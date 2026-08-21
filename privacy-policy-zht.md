@@ -2,7 +2,7 @@
 layout: legal
 lang: zh-Hant
 title: 隱私權政策
-permalink: /privacy-zht/
+permalink: /zht/privacy/
 ---
 
 # 隱私權政策

@@ -78,18 +78,18 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://sheetwidget.com/de/"/>
     <xhtml:link rel="alternate" hreflang="fr" href="https://sheetwidget.com/fr/"/>
   </url>
-  <url><loc>https://sheetwidget.com/privacy-en/</loc></url>
   <url><loc>https://sheetwidget.com/privacy/</loc></url>
-  <url><loc>https://sheetwidget.com/privacy-ko/</loc></url>
-  <url><loc>https://sheetwidget.com/privacy-zht/</loc></url>
-  <url><loc>https://sheetwidget.com/privacy-es/</loc></url>
-  <url><loc>https://sheetwidget.com/privacy-de/</loc></url>
-  <url><loc>https://sheetwidget.com/privacy-fr/</loc></url>
-  <url><loc>https://sheetwidget.com/terms-en/</loc></url>
+  <url><loc>https://sheetwidget.com/ja/privacy/</loc></url>
+  <url><loc>https://sheetwidget.com/ko/privacy/</loc></url>
+  <url><loc>https://sheetwidget.com/zht/privacy/</loc></url>
+  <url><loc>https://sheetwidget.com/es/privacy/</loc></url>
+  <url><loc>https://sheetwidget.com/de/privacy/</loc></url>
+  <url><loc>https://sheetwidget.com/fr/privacy/</loc></url>
   <url><loc>https://sheetwidget.com/terms/</loc></url>
-  <url><loc>https://sheetwidget.com/terms-ko/</loc></url>
-  <url><loc>https://sheetwidget.com/terms-zht/</loc></url>
-  <url><loc>https://sheetwidget.com/terms-es/</loc></url>
-  <url><loc>https://sheetwidget.com/terms-de/</loc></url>
-  <url><loc>https://sheetwidget.com/terms-fr/</loc></url>
+  <url><loc>https://sheetwidget.com/ja/terms/</loc></url>
+  <url><loc>https://sheetwidget.com/ko/terms/</loc></url>
+  <url><loc>https://sheetwidget.com/zht/terms/</loc></url>
+  <url><loc>https://sheetwidget.com/es/terms/</loc></url>
+  <url><loc>https://sheetwidget.com/de/terms/</loc></url>
+  <url><loc>https://sheetwidget.com/fr/terms/</loc></url>
 </urlset>

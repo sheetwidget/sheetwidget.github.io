@@ -50,15 +50,19 @@ LANGS = {
 # 言語版を持たない訪問者に見せる版。ルート（英語）。
 X_DEFAULT = f"{SITE}/"
 
-# 英語がルートへ移る前に配っていたURL。App Store Connect のマーケティングURLや
-# 過去に共有したリンクが指しているので、404にせずルートへ送る。
+# 規約・プライバシーのURL。本体と同じ構成（英語はルート直下、他は言語ディレクトリ配下）。
+def legal_url(kind, lang):
+    return f"{SITE}/{kind}/" if lang == "en" else f"{SITE}/{lang}/{kind}/"
+
+# 過去に配ったURL → 現在のURL。出荷済みのアプリ（ビルド18まで）が
+# /privacy-ko/ のような旧URLを焼き込んでいるため、404にせず転送で生かし続ける。
+# 古いバージョンを使い続ける人がいる限り踏まれるので、消さないこと。
 ALIASES = {"en": f"{SITE}/"}
+for _kind in ("privacy", "terms"):
+    for _lang in ("en", "ko", "zht", "es", "de", "fr"):
+        ALIASES[f"{_kind}-{_lang}"] = legal_url(_kind, _lang)
 # hreflang の値は html lang とは別（zht → zh-Hant）
 HREFLANG = {k: v[1] for k, v in LANGS.items()}
-
-# 規約・プライバシーのURL接尾辞（本体の data-legal 処理と揃える）
-LEGAL_SFX = {"ja": "", "en": "-en", "ko": "-ko", "zht": "-zht",
-             "es": "-es", "de": "-de", "fr": "-fr"}
 
 APP_STORE_URL = "https://apps.apple.com/app/id6795254414"
 NOINDEX = '<meta name="robots" content="noindex">'
@@ -267,7 +271,7 @@ def build_sitemap():
     alt = f'    <xhtml:link rel="alternate" hreflang="x-default" href="{X_DEFAULT}"/>\n' + alt
     urls = "\n".join(f"  <url>\n    <loc>{LANGS[l][2]}</loc>\n{alt}\n  </url>" for l in LANGS)
     legal = "\n".join(
-        f"  <url><loc>{SITE}/{kind}{LEGAL_SFX[l]}/</loc></url>"
+        f"  <url><loc>{legal_url(kind, l)}</loc></url>"
         for kind in ("privacy", "terms") for l in LANGS)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n'

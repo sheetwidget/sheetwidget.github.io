@@ -2,7 +2,7 @@
 layout: legal
 lang: zh-Hant
 title: 服務條款
-permalink: /terms-zht/
+permalink: /zht/terms/
 ---
 
 # 服務條款

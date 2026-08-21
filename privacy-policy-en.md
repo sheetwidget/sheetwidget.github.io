@@ -2,7 +2,7 @@
 layout: legal
 lang: en
 title: Privacy Policy
-permalink: /privacy-en/
+permalink: /privacy/
 ---
 
 # Privacy Policy

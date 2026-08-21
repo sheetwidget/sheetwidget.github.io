@@ -2,7 +2,7 @@
 layout: legal
 lang: de
 title: Nutzungsbedingungen
-permalink: /terms-de/
+permalink: /de/terms/
 ---
 
 # Nutzungsbedingungen

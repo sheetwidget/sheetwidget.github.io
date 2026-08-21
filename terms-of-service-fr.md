@@ -2,7 +2,7 @@
 layout: legal
 lang: fr
 title: Conditions d’utilisation
-permalink: /terms-fr/
+permalink: /fr/terms/
 ---
 
 # Conditions d’utilisation

@@ -2,7 +2,7 @@
 layout: legal
 lang: ko
 title: 이용약관
-permalink: /terms-ko/
+permalink: /ko/terms/
 ---
 
 # 이용약관

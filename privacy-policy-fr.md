@@ -2,7 +2,7 @@
 layout: legal
 lang: fr
 title: Politique de confidentialité
-permalink: /privacy-fr/
+permalink: /fr/privacy/
 ---
 
 # Politique de confidentialité

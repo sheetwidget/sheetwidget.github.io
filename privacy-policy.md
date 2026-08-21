@@ -2,7 +2,7 @@
 layout: legal
 lang: ja
 title: プライバシーポリシー
-permalink: /privacy/
+permalink: /ja/privacy/
 ---
 
 # プライバシーポリシー

@@ -2,7 +2,7 @@
 layout: legal
 lang: ko
 title: 개인정보 처리방침
-permalink: /privacy-ko/
+permalink: /ko/privacy/
 ---
 
 # 개인정보 처리방침

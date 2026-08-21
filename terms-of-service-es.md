@@ -2,7 +2,7 @@
 layout: legal
 lang: es
 title: Términos de servicio
-permalink: /terms-es/
+permalink: /es/terms/
 ---
 
 # Términos de servicio
