@@ -54,13 +54,13 @@ X_DEFAULT = f"{SITE}/"
 def legal_url(kind, lang):
     return f"{SITE}/{kind}/" if lang == "en" else f"{SITE}/{lang}/{kind}/"
 
-# 過去に配ったURL → 現在のURL。出荷済みのアプリ（ビルド18まで）が
-# /privacy-ko/ のような旧URLを焼き込んでいるため、404にせず転送で生かし続ける。
-# 古いバージョンを使い続ける人がいる限り踏まれるので、消さないこと。
+# 転送だけを置くURL。
+# /en/ は後方互換ではなく取り違え対策。/ja/ や /ko/ がある以上 /en/ も打たれる。
+#
+# 規約の旧URL（/privacy-ko/ 形式）はここに無い。あの形は一度も一般公開されて
+# いないアプリのためだけの互換で、審査を差し戻して新URLのビルドを出す以上、
+# 踏む人がいないため置かない。必要になったらここに1行足せば復活する。
 ALIASES = {"en": f"{SITE}/"}
-for _kind in ("privacy", "terms"):
-    for _lang in ("en", "ko", "zht", "es", "de", "fr"):
-        ALIASES[f"{_kind}-{_lang}"] = legal_url(_kind, _lang)
 # hreflang の値は html lang とは別（zht → zh-Hant）
 HREFLANG = {k: v[1] for k, v in LANGS.items()}
 
