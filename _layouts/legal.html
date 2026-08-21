@@ -10,13 +10,13 @@
 {% if page.permalink contains 'privacy' %}{% assign legalBase = 'privacy' %}{% else %}{% assign legalBase = 'terms' %}{% endif %}
 {% comment %}英語はルート、それ以外は言語ディレクトリ。本体のURL構成と揃える{% endcomment %}
 {% case page.lang %}
-  {% when 'ja' %}{% assign home = '/ja/' %}{% assign homeLabel = '← ホーム' %}{% assign ogLocale = 'ja_JP' %}
-  {% when 'ko' %}{% assign home = '/ko/' %}{% assign homeLabel = '← 홈' %}{% assign ogLocale = 'ko_KR' %}
-  {% when 'zh-Hant' %}{% assign home = '/zht/' %}{% assign homeLabel = '← 首頁' %}{% assign ogLocale = 'zh_TW' %}
-  {% when 'es' %}{% assign home = '/es/' %}{% assign homeLabel = '← Inicio' %}{% assign ogLocale = 'es_ES' %}
-  {% when 'de' %}{% assign home = '/de/' %}{% assign homeLabel = '← Startseite' %}{% assign ogLocale = 'de_DE' %}
-  {% when 'fr' %}{% assign home = '/fr/' %}{% assign homeLabel = '← Accueil' %}{% assign ogLocale = 'fr_FR' %}
-  {% else %}{% assign home = '/' %}{% assign homeLabel = '← Home' %}{% assign ogLocale = 'en_US' %}
+  {% when 'ja' %}{% assign ogImg = 'ja' %}{% assign home = '/ja/' %}{% assign homeLabel = '← ホーム' %}{% assign ogLocale = 'ja_JP' %}
+  {% when 'ko' %}{% assign ogImg = 'ko' %}{% assign home = '/ko/' %}{% assign homeLabel = '← 홈' %}{% assign ogLocale = 'ko_KR' %}
+  {% when 'zh-Hant' %}{% assign ogImg = 'zht' %}{% assign home = '/zht/' %}{% assign homeLabel = '← 首頁' %}{% assign ogLocale = 'zh_TW' %}
+  {% when 'es' %}{% assign ogImg = 'es' %}{% assign home = '/es/' %}{% assign homeLabel = '← Inicio' %}{% assign ogLocale = 'es_ES' %}
+  {% when 'de' %}{% assign ogImg = 'de' %}{% assign home = '/de/' %}{% assign homeLabel = '← Startseite' %}{% assign ogLocale = 'de_DE' %}
+  {% when 'fr' %}{% assign ogImg = 'fr' %}{% assign home = '/fr/' %}{% assign homeLabel = '← Accueil' %}{% assign ogLocale = 'fr_FR' %}
+  {% else %}{% assign ogImg = 'en' %}{% assign home = '/' %}{% assign homeLabel = '← Home' %}{% assign ogLocale = 'en_US' %}
 {% endcase %}
 <link rel="canonical" href="https://sheetwidget.com{{ page.permalink }}">
 <link rel="alternate" hreflang="x-default" href="https://sheetwidget.com/{{ legalBase }}/">
@@ -30,14 +30,16 @@
 <meta property="og:site_name" content="Sheet Widget">
 <meta property="og:type" content="article">
 <meta property="og:title" content="{{ page.title }} — Sheet Widget">
-<meta property="og:image" content="https://sheetwidget.com/img/og.png">
+<meta property="og:image" content="https://sheetwidget.com/img/og-{{ ogImg }}.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:url" content="https://sheetwidget.com{{ page.permalink }}">
 <meta property="og:description" content="Sheet Widget — {{ page.title }}">
 <meta property="og:locale" content="{{ ogLocale }}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page.title }} — Sheet Widget">
 <meta name="twitter:description" content="Sheet Widget — {{ page.title }}">
-<meta name="twitter:image" content="https://sheetwidget.com/img/og.png">
+<meta name="twitter:image" content="https://sheetwidget.com/img/og-{{ ogImg }}.png">
 <meta name="theme-color" content="#fbfaf6">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">

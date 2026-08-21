@@ -1551,7 +1551,10 @@ function applyLang(lang){
   });
   // 配信中モードの見た目。実リンクは APP_STORE_URL 設定時のみ張られる
   if(STORE_URL){
-    const liveMap = {kicker:'kickerLive', navSoon:'navSoonLive'};
+    // 配信中に文言を差し替える対象。data-i のキー → 差し替え後の辞書キー。
+    // 以前あった kicker は、参照元のHTMLも差し替え先の辞書キーも消えていて
+    // 何もしていなかったため削除した。足すときは両方あることを確認すること。
+    const liveMap = {navSoon:'navSoonLive'};
     Object.entries(liveMap).forEach(([k, lk]) => {
       const v = d[lk];
       if(v === undefined) return;
