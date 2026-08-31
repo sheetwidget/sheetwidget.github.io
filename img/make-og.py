@@ -48,11 +48,12 @@ def font_for(lang, size):
     return ImageFont.truetype(LATIN, size, index=1)     # Bold
 
 
-def draw_grid(d):
-    for x in range(0, W, CELL):
-        d.line([(x, BAR_H), (x, H)], fill=GRID, width=1)
-    for y in range(BAR_H, H, CELL):
-        d.line([(0, y), (W, y)], fill=GRID, width=1)
+def draw_grid(d, ox=0, oy=BAR_H):
+    """(ox, oy) を左上の角として CELL 間隔の方眼を引く。"""
+    for x in range(ox, W, CELL):
+        d.line([(x, oy), (x, H)], fill=GRID, width=1)
+    for y in range(oy, H, CELL):
+        d.line([(ox, y), (W, y)], fill=GRID, width=1)
 
 
 def fit(d, lines, lang, start=76, margin=64):
@@ -101,57 +102,62 @@ def build(lang, lines, icon):
 HEAD_BAND = (243, 241, 235)   # 列見出し・行番号の帯
 HEAD_LINE = (223, 220, 210)   # 帯の境界
 HEAD_INK  = (150, 146, 136)   # 帯の文字
-SELECT    = (242, 160, 42)    # 選択範囲の枠。アプリアイコンの橙と揃える
+SEL       = (26, 115, 232)    # 選択枠。LPの --sel と同じ
+SEL_FILL  = (237, 242, 250)   # 選択範囲の塗り。LPの rgba(26,115,232,.08) を背景に焼いた色
+
+# 帯の幅をセル幅と同じにすると、帯の内側の罫線がそのまま方眼の原点になる。
+# 帯だけ別の幅にすると列見出しと列がずれるので、ここは必ず CELL と揃える。
+BAND = CELL
+ORIGIN_X = BAND               # 方眼の左端。以降 CELL 間隔で罫線が入る
+ORIGIN_Y = BAR_H + BAND       # 方眼の上端
 
 
 def draw_sheet_chrome(d):
     """表計算の外枠。上に列見出し(A,B,C…)、左に行番号(1,2,3…)を敷く。"""
-    band = 40                      # 帯の太さ
-    top = BAR_H
-    d.rectangle([0, top, W, top + band], fill=HEAD_BAND)
-    d.rectangle([0, top, band, H], fill=HEAD_BAND)
+    d.rectangle([0, BAR_H, W, ORIGIN_Y], fill=HEAD_BAND)
+    d.rectangle([0, BAR_H, ORIGIN_X, H], fill=HEAD_BAND)
     f = ImageFont.truetype(LATIN, 19, index=0)
-
-    x = band
-    for i in range(30):
-        if x >= W:
-            break
-        d.text((x + CELL / 2, top + band / 2), chr(65 + i), font=f, fill=HEAD_INK, anchor="mm")
-        x += CELL
-    y = top + band
-    for i in range(30):
-        if y >= H:
-            break
-        d.text((band / 2, y + CELL / 2), str(i + 1), font=f, fill=HEAD_INK, anchor="mm")
-        y += CELL
-    d.line([(band, top), (band, H)], fill=HEAD_LINE, width=1)
-    d.line([(0, top + band), (W, top + band)], fill=HEAD_LINE, width=1)
+    # 見出しはセルの中央に置く。罫線とセルの対応がずれて見えないようにする。
+    for i, x in enumerate(range(ORIGIN_X, W, CELL)):
+        d.text((x + CELL / 2, BAR_H + BAND / 2), chr(65 + i),
+               font=f, fill=HEAD_INK, anchor="mm")
+    for i, y in enumerate(range(ORIGIN_Y, H, CELL)):
+        d.text((ORIGIN_X / 2, y + CELL / 2), str(i + 1),
+               font=f, fill=HEAD_INK, anchor="mm")
+    d.line([(ORIGIN_X, BAR_H), (ORIGIN_X, H)], fill=HEAD_LINE, width=1)
+    d.line([(0, ORIGIN_Y), (W, ORIGIN_Y)], fill=HEAD_LINE, width=1)
 
 
 def build_neutral(icon):
     im = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(im)
-    draw_grid(d)
+    draw_grid(d, ORIGIN_X, ORIGIN_Y)
     draw_sheet_chrome(d)
     d.rectangle([0, 0, W, BAR_H - 1], fill=GREEN)
 
-    # 中央の「選択されたセル範囲」。ここだけ白く抜いて、その中に商品名を置く。
-    box = [W // 2 - 300, 196, W // 2 + 300, 470]
-    d.rounded_rectangle(box, radius=10, fill=(255, 255, 255), outline=SELECT, width=4)
-    # 選択ハンドル（右下の小さな四角）。スプレッドシートの見慣れた記号
-    d.rectangle([box[2] - 7, box[3] - 7, box[2] + 7, box[3] + 7], fill=SELECT,
-                outline=(255, 255, 255), width=2)
+    # 選択範囲は罫線にぴったり載せる。列は6本目〜19本目で中心が画像の中央、
+    # 行は3本目〜9本目で中心が方眼部分の中央にくる。
+    x1, x2 = ORIGIN_X + CELL * 5, ORIGIN_X + CELL * 18
+    y1, y2 = ORIGIN_Y + CELL * 3, ORIGIN_Y + CELL * 9
+    d.rounded_rectangle([x1, y1, x2, y2], radius=3, fill=SEL_FILL, outline=SEL, width=4)
+    # 右下の選択ハンドル。LPと同じく白フチを付ける
+    d.rectangle([x2 - 8, y2 - 8, x2 + 8, y2 + 8], fill=SEL, outline=(255, 255, 255), width=2)
 
-    ic = icon.resize((132, 132), Image.LANCZOS)
-    mask = Image.new("L", (132 * 4, 132 * 4), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, 132 * 4 - 1, 132 * 4 - 1],
-                                           radius=int(132 * 4 * 0.2237), fill=255)
-    ic.putalpha(mask.resize((132, 132), Image.LANCZOS))
-    im.paste(ic, (W // 2 - 66, 228), ic)
-
-    # 枠の上下に同じだけ余白が残る位置。文字が下線に触れると窮屈に見える。
+    # アイコンと商品名をひとかたまりとして、枠の中央に置く
+    icon_px, gap = 132, 22
     f = ImageFont.truetype(LATIN, 60, index=1)
-    d.text((W // 2, 374), BRAND, font=f, fill=INK, anchor="ma")
+    tb = d.textbbox((0, 0), BRAND, font=f, anchor="ma")
+    text_h = tb[3] - tb[1]
+    block = icon_px + gap + text_h
+    top = (y1 + y2) / 2 - block / 2
+
+    ic = icon.resize((icon_px, icon_px), Image.LANCZOS)
+    mask = Image.new("L", (icon_px * 4, icon_px * 4), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, icon_px * 4 - 1, icon_px * 4 - 1],
+                                           radius=int(icon_px * 4 * 0.2237), fill=255)
+    ic.putalpha(mask.resize((icon_px, icon_px), Image.LANCZOS))
+    im.paste(ic, (W // 2 - icon_px // 2, int(top)), ic)
+    d.text((W // 2, top + icon_px + gap - tb[1]), BRAND, font=f, fill=INK, anchor="ma")
     return im
 
 
