@@ -6,6 +6,8 @@
   太字の見出し2行 / 下部に緑のブランド名
 文言を変えたい時は HEADLINES を直すだけでよい。実行は `python3 img/make-og.py`。
 """
+import sys
+
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1200, 630
@@ -90,13 +92,81 @@ def build(lang, lines, icon):
     return im
 
 
+# ── 言語に依存しないカード ──────────────────────────────────
+# SNSのクローラは閲覧者の言語を見ないため、言語別の見出しを載せると
+# どの言語で共有しても英語版か日本語版のどちらかに固定されてしまう。
+# そこで共有用の1枚は文字を商品名だけにし、表計算らしさは
+# 行番号と列見出し（数字とアルファベット＝どの言語でも読める）で出す。
+
+HEAD_BAND = (243, 241, 235)   # 列見出し・行番号の帯
+HEAD_LINE = (223, 220, 210)   # 帯の境界
+HEAD_INK  = (150, 146, 136)   # 帯の文字
+SELECT    = (242, 160, 42)    # 選択範囲の枠。アプリアイコンの橙と揃える
+
+
+def draw_sheet_chrome(d):
+    """表計算の外枠。上に列見出し(A,B,C…)、左に行番号(1,2,3…)を敷く。"""
+    band = 40                      # 帯の太さ
+    top = BAR_H
+    d.rectangle([0, top, W, top + band], fill=HEAD_BAND)
+    d.rectangle([0, top, band, H], fill=HEAD_BAND)
+    f = ImageFont.truetype(LATIN, 19, index=0)
+
+    x = band
+    for i in range(30):
+        if x >= W:
+            break
+        d.text((x + CELL / 2, top + band / 2), chr(65 + i), font=f, fill=HEAD_INK, anchor="mm")
+        x += CELL
+    y = top + band
+    for i in range(30):
+        if y >= H:
+            break
+        d.text((band / 2, y + CELL / 2), str(i + 1), font=f, fill=HEAD_INK, anchor="mm")
+        y += CELL
+    d.line([(band, top), (band, H)], fill=HEAD_LINE, width=1)
+    d.line([(0, top + band), (W, top + band)], fill=HEAD_LINE, width=1)
+
+
+def build_neutral(icon):
+    im = Image.new("RGB", (W, H), BG)
+    d = ImageDraw.Draw(im)
+    draw_grid(d)
+    draw_sheet_chrome(d)
+    d.rectangle([0, 0, W, BAR_H - 1], fill=GREEN)
+
+    # 中央の「選択されたセル範囲」。ここだけ白く抜いて、その中に商品名を置く。
+    box = [W // 2 - 300, 196, W // 2 + 300, 470]
+    d.rounded_rectangle(box, radius=10, fill=(255, 255, 255), outline=SELECT, width=4)
+    # 選択ハンドル（右下の小さな四角）。スプレッドシートの見慣れた記号
+    d.rectangle([box[2] - 7, box[3] - 7, box[2] + 7, box[3] + 7], fill=SELECT,
+                outline=(255, 255, 255), width=2)
+
+    ic = icon.resize((132, 132), Image.LANCZOS)
+    mask = Image.new("L", (132 * 4, 132 * 4), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, 132 * 4 - 1, 132 * 4 - 1],
+                                           radius=int(132 * 4 * 0.2237), fill=255)
+    ic.putalpha(mask.resize((132, 132), Image.LANCZOS))
+    im.paste(ic, (W // 2 - 66, 228), ic)
+
+    # 枠の上下に同じだけ余白が残る位置。文字が下線に触れると窮屈に見える。
+    f = ImageFont.truetype(LATIN, 60, index=1)
+    d.text((W // 2, 374), BRAND, font=f, fill=INK, anchor="ma")
+    return im
+
+
 def main():
     icon = Image.open("img/icon.png").convert("RGBA")
-    for lang, lines in HEADLINES.items():
-        im = build(lang, lines, icon)
-        for name in [f"og-{lang}.png"] + EXTRA_COPIES.get(lang, []):
-            im.save(f"img/{name}")
-            print("wrote img/" + name)
+    # 既定は共有用の1枚だけ。言語別が要るときは --per-language を付ける。
+    if "--per-language" in sys.argv:
+        for lang, lines in HEADLINES.items():
+            im = build(lang, lines, icon)
+            for name in [f"og-{lang}.png"] + EXTRA_COPIES.get(lang, []):
+                im.save(f"img/{name}")
+                print("wrote img/" + name)
+        return
+    build_neutral(icon).save("img/og.png")
+    print("wrote img/og.png")
 
 
 if __name__ == "__main__":

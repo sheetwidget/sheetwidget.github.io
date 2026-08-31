@@ -136,7 +136,9 @@ def head_meta(html, lang, dic):
     """head の言語依存部分（title・description・OGP・canonical）を差し替える。"""
     _, _, url = LANGS[lang]
     title, desc = dic["docTitle"], dic["metaDesc"]
-    og = f"{SITE}/img/og-{lang}.png"
+    # SNSのクローラは閲覧者の言語を見ないので、言語別の絵を出し分けても
+    # 共有した人の言語に固定されるだけになる。共有用は言語非依存の1枚に統一する。
+    og = f"{SITE}/img/og.png"
     rep = [
         (r"<title>.*?</title>", f"<title>{title}</title>"),
         (r'<meta name="description" content="[^"]*">',
@@ -267,6 +269,25 @@ def alias_page(target):
 """
 
 
+def legal_path(kind, lang):
+    """ページ内リンク用の相対パス。英語はルート直下、他は言語ディレクトリ配下。"""
+    sub = LANGS[lang][0]
+    return f"/{sub}/{kind}/" if sub else f"/{kind}/"
+
+
+def localize_legal_links(html, lang):
+    """フッターの規約リンクを、その言語版の実URLに焼き込む。
+
+    実行時にも applyLang() が同じ書き換えをするが、それはJavaScript前提で、
+    言語切替のたびに張り直すためのもの。静的HTMLの側が英語のままだと、
+    JSを待たずに押した人とクローラだけが英語版へ飛ぶ。両方を正にしておく。
+    """
+    return re.sub(
+        r'<a href="[^"]*" data-legal="(terms|privacy)"',
+        lambda m: f'<a href="{legal_path(m.group(1), lang)}" data-legal="{m.group(1)}"',
+        html)
+
+
 def build_sitemap():
     """トップ・各言語ページ・規約類を列挙する。言語ページには hreflang も添える。"""
     alt = "\n".join(
@@ -314,6 +335,7 @@ def main():
         html = head_meta(src, lang, dic)
         html = put_ld(html, structured_data(lang, dic))
         html, n = fill_data_i(html, dic)
+        html = localize_legal_links(html, lang)
         html = re.sub(r'<html lang="[^"]*">', f'<html lang="{LANGS[lang][1]}">', html, count=1)
 
         # そのURLが何語なのかをページ自身に持たせる（ブラウザ設定より優先）
