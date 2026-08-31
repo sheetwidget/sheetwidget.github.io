@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page.title }} — Sheet Widget</title>
 <meta name="description" content="Sheet Widget — {{ page.title }}">
-<!-- ▼リリース時にこの1行を削除（検索エンジンからの非公開設定） -->
-<meta name="robots" content="noindex">
 {% if page.permalink contains 'privacy' %}{% assign legalBase = 'privacy' %}{% else %}{% assign legalBase = 'terms' %}{% endif %}
 {% comment %}英語はルート、それ以外は言語ディレクトリ。本体のURL構成と揃える{% endcomment %}
 {% case page.lang %}

@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Google Sheets als Widget auf dem iPhone-Home｜Sheet Widget</title>
 <meta name="description" content="Bring jeden Bereich deiner Google-Tabellen als Widget auf den iPhone-Home-Bildschirm. Formatierung erhalten, immer aktuell. Mit Diagrammen.">
-<!-- ▼リリース時にこの1行を削除（検索エンジンからの非公開設定） -->
-<meta name="robots" content="noindex">
 <link rel="canonical" href="https://sheetwidget.com/de/">
 <link rel="alternate" hreflang="x-default" href="https://sheetwidget.com/">
 <link rel="alternate" hreflang="en" href="https://sheetwidget.com/">
@@ -30,7 +28,7 @@
 <meta name="twitter:description" content="Bring jeden Bereich deiner Google-Tabellen als Widget auf den iPhone-Home-Bildschirm. Formatierung erhalten, immer aktuell. Mit Diagrammen.">
 <meta name="twitter:image" content="https://sheetwidget.com/img/og-de.png">
 <!-- BUILD:LD -->
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "MobileApplication", "name": "Sheet Widget", "operatingSystem": "iOS", "applicationCategory": "UtilitiesApplication", "url": "https://sheetwidget.com/de/", "inLanguage": "de", "description": "Bring jeden Bereich deiner Google-Tabellen als Widget auf den iPhone-Home-Bildschirm. Formatierung erhalten, immer aktuell. Mit Diagrammen.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "MobileApplication", "name": "Sheet Widget", "operatingSystem": "iOS", "applicationCategory": "UtilitiesApplication", "url": "https://sheetwidget.com/de/", "inLanguage": "de", "description": "Bring jeden Bereich deiner Google-Tabellen als Widget auf den iPhone-Home-Bildschirm. Formatierung erhalten, immer aktuell. Mit Diagrammen.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"}, "installUrl": "https://apps.apple.com/app/id6795254414", "sameAs": ["https://apps.apple.com/app/id6795254414"]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "inLanguage": "de", "mainEntity": [{"@type": "Question", "name": "Muss ich die Tabelle freigeben oder im Web veröffentlichen?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Du wählst nur den gewünschten Bereich aus, die Tabelle bleibt privat. Es wird nichts für andere sichtbar gemacht."}}, {"@type": "Question", "name": "Kann mein Google-Konto dadurch übernommen werden?", "acceptedAnswer": {"@type": "Answer", "text": "Sheet Widget kann nur die von dir ausgewählte Tabelle lesen. Dein Passwort wird nie direkt gehandhabt — der Zugriff ist über Googles offizielle Anmeldung (OAuth) begrenzt."}}, {"@type": "Question", "name": "Free oder Pro — was passt zu mir?", "acceptedAnswer": {"@type": "Answer", "text": "Willst du nur eine Tabelle auf dem Home-Bildschirm, reicht Free. Für mehrere Tabellen nebeneinander, ohne Wasserzeichen, mit Diagrammen oder zum Kopieren von Zellwerten: Pro — 7 Tage kostenlos testbar."}}, {"@type": "Question", "name": "Wie aktuell sind die Zahlen im Widget?", "acceptedAnswer": {"@type": "Answer", "text": "Durch iOS aktualisiert sich das Widget automatisch etwa alle 15–60 Minuten. Sofort nötig? Der Sofort-Aktualisieren-Button von Pro aktualisiert direkt."}}, {"@type": "Question", "name": "Funktioniert es mit Formeln oder der Funktion IMAGE()?", "acceptedAnswer": {"@type": "Answer", "text": "Ja — berechnete Ergebnisse und Bilder werden unverändert übernommen. Du musst für das Widget keine Formeln umschreiben oder Skripte einrichten."}}, {"@type": "Question", "name": "Werden Kontrollkästchen oder besondere Formatierungen übernommen?", "acceptedAnswer": {"@type": "Answer", "text": "Werte, Hintergrund-/Textfarben, Fett/Kursiv/Unterstrichen/Durchgestrichen, Rahmen, Ausrichtung, verbundene Zellen und Zeilenumbruch werden übernommen. Einige Objekte wie Kontrollkästchen werden noch nicht unterstützt."}}, {"@type": "Question", "name": "Warum öffnet sich die App, wenn ich eine Zelle zum Kopieren antippe?", "acceptedAnswer": {"@type": "Answer", "text": "iOS erlaubt es einem Widget nicht, direkt in die Zwischenablage zu schreiben.\nDie App kommt kurz in den Vordergrund, um zu kopieren.\nWenn du als Ziel „Tabelle“ wählst, landest du direkt nach dem Kopieren in der Tabelle."}}, {"@type": "Question", "name": "Wird auch die Formatierung kopiert?", "acceptedAnswer": {"@type": "Answer", "text": "Nein, es wird nur der Textwert der Zelle kopiert.\nTextfarbe, Hintergrundfarbe, Fettdruck und andere Formatierungen werden nicht kopiert, ebenso wenig Bilder, die über die Funktion IMAGE angezeigt werden.\nDas Antippen einer leeren Zelle kopiert nichts."}}]}</script>
 <!-- /BUILD:LD -->
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -1232,7 +1230,7 @@ addEventListener('resize', () => { if(majorRz) syncCellSize(); });
    ID はアプリ登録時点で確定しており、公開後も変わらない。
    審査通過前に設定するとリンク先が404になるので、それまでは空のままにする。
 ===================================================== */
-const APP_STORE_URL = '';
+const APP_STORE_URL = 'https://apps.apple.com/app/id6795254414';
 // CTA は常に「配信中」の見た目。APP_STORE_URL が空の間はリンク先が # の
 // プレースホルダで、build.py --publish が実URLを埋める。
 const STORE_URL = APP_STORE_URL || '#';

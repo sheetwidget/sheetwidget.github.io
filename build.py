@@ -194,6 +194,10 @@ def structured_data(lang, dic):
         "inLanguage": HREFLANG[lang],
         "description": strip_tags(dic["metaDesc"]),
         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY"},
+        # ストアの掲載ページと結び付ける。installUrl は検索結果のアプリ枠に効き、
+        # sameAs は「このサイトとあのアプリは同一の存在だ」と示すための対応付け。
+        "installUrl": APP_STORE_URL,
+        "sameAs": [APP_STORE_URL],
     }
     qa = []
     for i in range(1, 9):
