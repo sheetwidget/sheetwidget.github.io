@@ -162,6 +162,10 @@
   var built = false, stalled = false, watchdog = null;
 
   // パラメータ（アプリから location.hash で受領。# 以降はサーバーへ送信されない）
+  // 開いた瞬間のフラグメントを控えておく。「もう一度試す」でここへ戻るため。
+  // Googleのログインを挟むとフラグメントが失われることがあり、その状態で
+  // 再読み込みするとパラメータ不足のエラーに落ちて二度と抜けられなくなる。
+  var ORIGINAL_HASH = location.hash;
   var params = {};
   location.hash.slice(1).split('&').forEach(function(kv){
     var i = kv.indexOf('=');
@@ -189,12 +193,20 @@
   }
   function showLoadError(){ showError(T.loadTitle, T.loadText); }
 
-  document.getElementById('retryBtn').onclick  = function(){ location.reload(); };
+  // reload ではなく、控えておいたフラグメント付きで開き直す。
+  // reload だとフラグメントが欠けたまま同じ画面に戻り、さらに直前がPOSTの結果だと
+  // Safari が「このメッセージは期限切れです」を挟んで詰む。replace なら常にGETで入り直す。
+  document.getElementById('retryBtn').onclick  = function(){
+    location.replace(location.pathname + ORIGINAL_HASH);
+  };
   document.getElementById('cancelBtn').onclick = function(){ back('cancel'); };
 
   // アクセストークンはこのページが自分で取得する（下記 startLogin）。
   // アプリから受け取るのは Picker の構築に要るものだけ。
   if (!params.key || !params.appId) {
+    // ここは再試行しても結果が変わらない（アプリから開き直すしか道がない）。
+    // 押しても同じ画面に戻るだけのボタンを出すと、抜け道が無いように見える。
+    document.getElementById('retryBtn').classList.add('hidden');
     showError(T.appTitle, T.appText);
     return;
   }
