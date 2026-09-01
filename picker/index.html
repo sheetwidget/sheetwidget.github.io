@@ -24,6 +24,13 @@
   .picker-dialog{left:0!important;top:0!important;right:0!important;bottom:0!important;
     width:100%!important;height:100%!important;border:none!important;box-shadow:none!important}
   .picker-dialog-bg{display:none!important}
+  /* Picker が自前のエラーを出して行き止まったときの逃げ道。Picker より前面に置く。
+     Google のダイアログは iframe の中なので、こちらから中身を触れない。
+     押せる出口を常に1つ画面上に残しておくことでしか、輪から出せない。 */
+  #escape{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));
+    z-index:2000;display:none;font-size:13px;padding:9px 14px;border:none;border-radius:999px;
+    background:rgba(0,0,0,.72);color:#fff;font-family:inherit;-webkit-backdrop-filter:blur(6px)}
+  #escape.on{display:block}
 
   /* --- アプリと同じデザインのオーバーレイ画面 --- */
   .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
@@ -72,6 +79,7 @@
   <button class="btn" id="retryBtn"></button>
   <button class="link" id="cancelBtn"></button>
 </div>
+<button id="escape"></button>
 
 <script>
 (function(){
@@ -91,6 +99,7 @@
           sub:'Google でログインすると、<br>シートの一覧が表示されます。',
           btn:'Google でログインして選ぶ',
           cancelled:'ログインをキャンセルしました。<br>もう一度お試しください。',
+          resume:'画面を離れたので、<br>もう一度ログインしてください。',
           loadTitle:'読み込めませんでした',
           loadText:'通信環境を確認して、もう一度お試しください。',
           appTitle:'このページはアプリ専用です',
@@ -100,6 +109,7 @@
           sub:'Sign in with Google to see<br>your spreadsheets.',
           btn:'Sign in with Google',
           cancelled:'Sign-in was cancelled.<br>Please try again.',
+          resume:'You left this page.<br>Please sign in again.',
           loadTitle:'Couldn’t load',
           loadText:'Check your connection and try again.',
           appTitle:'This page is part of the app',
@@ -109,6 +119,7 @@
           sub:'Google 계정으로 로그인하면<br>스프레드시트 목록이 표시됩니다.',
           btn:'Google 계정으로 로그인',
           cancelled:'로그인을 취소했습니다.<br>다시 시도해 주세요.',
+          resume:'화면을 벗어났습니다.<br>다시 로그인해 주세요.',
           loadTitle:'불러오지 못했습니다',
           loadText:'네트워크 상태를 확인한 후 다시 시도해 주세요.',
           appTitle:'앱 전용 페이지입니다',
@@ -118,6 +129,7 @@
           sub:'使用 Google 帳戶登入後，<br>即會顯示試算表清單。',
           btn:'使用 Google 帳戶登入',
           cancelled:'已取消登入，<br>請再試一次。',
+          resume:'由於離開了畫面，<br>請重新登入。',
           loadTitle:'無法載入',
           loadText:'請檢查網路連線後再試一次。',
           appTitle:'此頁面為App專用',
@@ -127,6 +139,7 @@
           sub:'Inicia sesión con Google para ver<br>tus hojas de cálculo.',
           btn:'Iniciar sesión con Google',
           cancelled:'Has cancelado el inicio de sesión.<br>Inténtalo de nuevo.',
+          resume:'Has salido de esta página.<br>Vuelve a iniciar sesión.',
           loadTitle:'No se pudo cargar',
           loadText:'Comprueba tu conexión e inténtalo de nuevo.',
           appTitle:'Esta página es parte de la app',
@@ -136,6 +149,7 @@
           sub:'Melde dich mit Google an,<br>um deine Tabellen zu sehen.',
           btn:'Mit Google anmelden',
           cancelled:'Anmeldung abgebrochen.<br>Bitte versuche es erneut.',
+          resume:'Du hast diese Seite verlassen.<br>Bitte melde dich erneut an.',
           loadTitle:'Laden fehlgeschlagen',
           loadText:'Prüfe deine Verbindung und versuche es erneut.',
           appTitle:'Diese Seite gehört zur App',
@@ -145,6 +159,7 @@
           sub:'Connectez-vous avec Google pour voir<br>vos feuilles de calcul.',
           btn:'Se connecter avec Google',
           cancelled:'Connexion annulée.<br>Veuillez réessayer.',
+          resume:'Vous avez quitté cette page.<br>Veuillez vous reconnecter.',
           loadTitle:'Échec du chargement',
           loadText:'Vérifiez votre connexion et réessayez.',
           appTitle:'Cette page fait partie de l’app',
@@ -160,6 +175,9 @@
   var spin     = document.getElementById('spin');
   var openBtn  = document.getElementById('openBtn');
   var built = false, stalled = false, watchdog = null;
+  // 一度でもこの文書から離れたか（2段階認証でメールアプリへ行った等）。
+  // 離れると Picker が握っていた一時的な Cookie アクセスが失われる。
+  var leftPage = false;
 
   // パラメータ（アプリから location.hash で受領。# 以降はサーバーへ送信されない）
   // 開いた瞬間のフラグメントを控えておく。「もう一度試す」でここへ戻るため。
@@ -309,12 +327,58 @@
     }
   }
 
+  // 2段階認証でメールアプリ等へ飛ぶと、この文書から離れる。戻ってきた時点で
+  // ポップアップ由来の一時的な Cookie アクセスは失われていて、Picker は
+  // Drive の中身を読めずに自前の「エラーが発生しました」を出す。その「再起動」は
+  // Picker を組み直すだけで Cookie アクセスは取り直さないため、何度押しても同じ
+  // 画面に戻る＝出口の無い輪になる。
+  //
+  // そこで、離れて戻ってきたら Picker を捨ててログインボタンの状態へ戻す。
+  // 押し直せば新しいポップアップとタップで Cookie アクセスを取り直せる。
+  // 2段階認証は一度通せば Google が端末を覚えるので、次はブラウザ内で完結する。
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) { leftPage = true; return; }
+    if (!leftPage || stalled) return;
+    leftPage = false;
+    // ログイン前（ボタンが出ている）なら何も壊れていないので触らない。
+    if (!openBtn.classList.contains('hidden')) return;
+    // ログインのポップアップが開くときも、この文書は一度 hidden になる。
+    // トークンが取れていれば流れは正常に進んでいるので、巻き戻してはいけない。
+    // 巻き戻すのは「離れて戻ったのにトークンが無い」＝止まっている場合だけ。
+    if (accessToken) return;
+    disposePicker();
+    built = false;
+    if (watchdog){ clearTimeout(watchdog); watchdog = null; }
+    errBox.classList.add('hidden');
+    readyScreen.classList.remove('hidden');
+    readySub.innerHTML = T.resume;
+    showOpenButton();
+  });
+
+  // Picker が出ている間だけ、前面に「もう一度試す」を出しておく。
+  // Picker のエラーは iframe の中で起きるため、こちらからは検知も操作もできない。
+  // 押せる出口を1つ常に残しておくことでしか、行き止まりから戻す手段がない。
+  var escapeBtn = document.getElementById('escape');
+  escapeBtn.textContent = T.retry;
+  escapeBtn.onclick = function(){
+    escapeBtn.classList.remove('on');
+    disposePicker();
+    built = false; accessToken = null;
+    if (watchdog){ clearTimeout(watchdog); watchdog = null; }
+    errBox.classList.add('hidden');
+    readyScreen.classList.remove('hidden');
+    readySub.innerHTML = T.resume;
+    showOpenButton();
+  };
+
   openBtn.onclick = startLogin;
 
   // 前回の(失敗した)pickerダイアログを完全に取り除く。
   // 残っていると次の構築が壊れた画面のまま表示されてしまう。
   var currentPicker = null;
   function disposePicker(){
+    var esc = document.getElementById('escape');
+    if (esc) esc.classList.remove('on');
     if (currentPicker) {
       try { currentPicker.setVisible(false); currentPicker.dispose(); } catch (e) {}
       currentPicker = null;
@@ -381,6 +445,7 @@
         })
         .build();
       currentPicker.setVisible(true);
+      document.getElementById('escape').classList.add('on');
       watchForPicker();
     } catch (e) {
       showLoadError();
