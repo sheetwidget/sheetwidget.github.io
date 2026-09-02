@@ -249,6 +249,7 @@
 
   function showOpenButton(){
     if (watchdog){ clearTimeout(watchdog); watchdog = null; }
+    clearLoginWatch();
     spin.classList.add('hidden');
     openBtn.classList.remove('hidden');
   }
@@ -287,9 +288,30 @@
       .catch(function(){});
   }
 
+  // ログイン中の見張り。ボタンを隠してぐるぐるにした以上、応答が来なければ
+  // 画面に触れるものが何も無くなる。一定時間で必ずボタンへ戻す。
+  //
+  // ただし2段階認証でメールアプリ等へ移っている間は数える意味がないので、
+  // 見えていないときは数え直す。visibilitychange 側の復帰処理と二重にならないよう、
+  // どちらが先に走っても同じ「ボタンへ戻す」に着地させる。
+  var loginWatch = null;
+  function armLoginWatch(){
+    clearLoginWatch();
+    loginWatch = setTimeout(function(){
+      if (document.hidden) { armLoginWatch(); return; }   // 離席中は数え直す
+      if (accessToken || built || stalled) return;
+      showOpenButton();
+      readySub.innerHTML = T.loadText;
+    }, 45000);
+  }
+  function clearLoginWatch(){
+    if (loginWatch){ clearTimeout(loginWatch); loginWatch = null; }
+  }
+
   function startLogin(){
     openBtn.classList.add('hidden');
     spin.classList.remove('hidden');
+    armLoginWatch();
     disposePicker();
     try {
       if (!tokenClient) {
@@ -363,7 +385,9 @@
   escapeBtn.onclick = function(){
     escapeBtn.classList.remove('on');
     disposePicker();
-    built = false; accessToken = null;
+    // stalled を戻さないと、この後に起きたエラーが握りつぶされて
+    // また「何も起きない」状態になる。
+    built = false; accessToken = null; stalled = false;
     if (watchdog){ clearTimeout(watchdog); watchdog = null; }
     errBox.classList.add('hidden');
     readyScreen.classList.remove('hidden');
